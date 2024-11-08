@@ -51,7 +51,7 @@ class Spice:
               "refs" : ref
             })
 
-        cwd = os.path.dirname(os.path.abspath(__file__))
+        cwd = "/kaggle/working/pycocoevalcap/spice"
         temp_dir=os.path.join(cwd, TEMP_DIR)
         in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir,
                                               mode='w+')
