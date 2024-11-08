@@ -11,7 +11,7 @@ import tempfile
 from .get_stanford_models import get_stanford_models
 
 # Assumes spice.jar is in the same directory as spice.py.  Change as needed.
-SPICE_JAR = 'spice-1.0.jar'
+SPICE_JAR = '/kaggle/working/spice-1.0.jar'
 TEMP_DIR = 'tmp'
 CACHE_DIR = 'cache'
 
@@ -50,8 +50,8 @@ class Spice:
               "test" : hypo[0],
               "refs" : ref
             })
-        
-        cwd = os.path.dirname(os.path.abspath(__file__))
+        '''
+        cwd = "/kaggle/working/pycocoevalcap/spice"
         temp_dir=os.path.join(cwd, TEMP_DIR)
         in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir,
                                               mode='w+')
@@ -62,7 +62,8 @@ class Spice:
         out_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir)
         out_file.close()
         cache_dir=os.path.join(cwd, CACHE_DIR)
-        
+        if not os.path.exists(cache_dir):
+          os.makedirs(cache_dir)
         spice_cmd = ['java', '-jar', '-Xmx8G', SPICE_JAR, in_file.name,
           '-cache', cache_dir,
           '-out', out_file.name,
@@ -77,7 +78,42 @@ class Spice:
           results = json.load(data_file)
         os.remove(in_file.name)
         os.remove(out_file.name)
+        '''
+        cwd = '/kaggle/working'
+        temp_dir = os.path.join(cwd, 'tmp')
+        cache_dir = os.path.join(cwd, 'cache')
         
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        
+        in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir, mode='w+')
+        json.dump(input_data, in_file, indent=2)
+        in_file.close()
+        
+        out_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir)
+        out_file.close()
+        
+        spice_cmd = [
+            'java', '-jar', '-Xmx8G', SPICE_JAR, in_file.name,
+            '-cache', cache_dir,
+            '-out', out_file.name,
+            '-subset',
+            '-silent'
+        ]
+        
+        result = subprocess.run(spice_cmd, cwd=cwd, capture_output=True, text=True)
+        print("stdout:", result.stdout)
+        print("stderr:", result.stderr)
+
+        
+        with open(out_file.name) as data_file:    
+            results = json.load(data_file)
+            
+        os.remove(in_file.name)
+        os.remove(out_file.name)
+
         imgId_to_scores = {}
         spice_scores = []
         for item in results:
@@ -95,5 +131,3 @@ class Spice:
 
     def method(self):
         return "SPICE"
-
-
