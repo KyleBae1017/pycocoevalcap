@@ -50,7 +50,7 @@ class Spice:
               "test" : hypo[0],
               "refs" : ref
             })
-
+        '''
         cwd = "/kaggle/working/pycocoevalcap/spice"
         temp_dir=os.path.join(cwd, TEMP_DIR)
         in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir,
@@ -76,6 +76,38 @@ class Spice:
         # Read and process results
         with open(out_file.name) as data_file:    
           results = json.load(data_file)
+        os.remove(in_file.name)
+        os.remove(out_file.name)
+        '''
+        cwd = '/kaggle/working'
+        temp_dir = os.path.join(cwd, 'tmp')
+        cache_dir = os.path.join(cwd, 'cache')
+        
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        
+        in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir, mode='w+')
+        json.dump(input_data, in_file, indent=2)
+        in_file.close()
+        
+        out_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir)
+        out_file.close()
+        
+        spice_cmd = [
+            'java', '-jar', '-Xmx8G', SPICE_JAR, in_file.name,
+            '-cache', cache_dir,
+            '-out', out_file.name,
+            '-subset',
+            '-silent'
+        ]
+        
+        subprocess.check_call(spice_cmd, cwd=cwd)
+        
+        with open(out_file.name) as data_file:    
+            results = json.load(data_file)
+            
         os.remove(in_file.name)
         os.remove(out_file.name)
 
