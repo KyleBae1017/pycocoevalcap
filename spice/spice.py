@@ -103,7 +103,10 @@ class Spice:
             '-silent'
         ]
         
-        subprocess.check_call(spice_cmd, cwd=cwd)
+        result = subprocess.run(spice_cmd, cwd=cwd, capture_output=True, text=True)
+        print("stdout:", result.stdout)
+        print("stderr:", result.stderr)
+
         
         with open(out_file.name) as data_file:    
             results = json.load(data_file)
