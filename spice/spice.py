@@ -11,7 +11,7 @@ import tempfile
 from .get_stanford_models import get_stanford_models
 
 # Assumes spice.jar is in the same directory as spice.py.  Change as needed.
-SPICE_JAR = 'kaggle/usr/lib/inthon2024script/spice-1.0.jar'
+SPICE_JAR = 'spice-1.0.jar'
 TEMP_DIR = 'tmp'
 CACHE_DIR = 'cache'
 
