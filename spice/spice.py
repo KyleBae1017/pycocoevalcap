@@ -53,8 +53,6 @@ class Spice:
 
         cwd = os.path.dirname(os.path.abspath(__file__))
         temp_dir=os.path.join(cwd, TEMP_DIR)
-        if not os.path.exists(temp_dir):
-          os.makedirs(temp_dir)
         in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir,
                                               mode='w+')
         json.dump(input_data, in_file, indent=2)
